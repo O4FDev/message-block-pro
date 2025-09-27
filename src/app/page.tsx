@@ -1,21 +1,50 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 
 export default function Home() {
   const iframeRef = useRef<HTMLIFrameElement>(null);
+  const [isCrawler, setIsCrawler] = useState(false);
 
   useEffect(() => {
-    // A slight delay to ensure the iframe is ready
-    const timer = setTimeout(() => {
-      if (iframeRef.current) {
-        // Reloading the src can help trigger autoplay in some browsers
-        iframeRef.current.src = iframeRef.current.src;
-      }
-    }, 100);
+    const userAgent = navigator.userAgent.toLowerCase();
+    const crawlerKeywords = [
+      "bot",
+      "crawler",
+      "spider",
+      "crawling",
+      "page2images",
+    ];
+    const isCrawlerRequest = crawlerKeywords.some((keyword) =>
+      userAgent.includes(keyword)
+    );
 
-    return () => clearTimeout(timer);
+    if (isCrawlerRequest) {
+      setIsCrawler(true);
+    } else {
+      // A slight delay to ensure the iframe is ready
+      const timer = setTimeout(() => {
+        if (iframeRef.current) {
+          // Reloading the src can help trigger autoplay in some browsers
+          iframeRef.current.src = iframeRef.current.src;
+        }
+      }, 100);
+
+      return () => clearTimeout(timer);
+    }
   }, []);
+
+  if (isCrawler) {
+    return (
+      <main>
+        <div style={{ padding: "2rem", color: "white" }}>
+          <h1>Welcome to Message Block Pro</h1>
+          <p>The ultimate solution to block spam SMS messages.</p>
+          <p>Loading your dashboard...</p>
+        </div>
+      </main>
+    );
+  }
 
   return (
     <main>
